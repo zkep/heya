@@ -1,0 +1,52 @@
+---
+# This file configures https://pre-commit.com/
+# Based on pre-commit hooks in
+#   https://github.com/pre-commit/pre-commit-hooks
+#   https://github.com/jumanjihouse/pre-commit-hooks
+# to use specific hooks and options.
+fail_fast: true
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      - id: trailing-whitespace
+        exclude: \.output
+      - id: end-of-file-fixer
+        exclude: \.(cp?p?$|output)
+      - id: check-docstring-first
+      - id: check-added-large-files
+      - id: check-yaml
+      - id: check-ast
+      - id: debug-statements
+      - id: check-symlinks
+      - id: name-tests-test
+        args: [ --pytest-test-first ]
+  - repo: https://github.com/asottile/add-trailing-comma
+    rev: v3.1.0
+    hooks:
+      - id: add-trailing-comma
+  - repo: https://github.com/pre-commit/pre-commit
+    rev: v3.7.1
+    hooks:
+      - id: validate_manifest
+  - repo: https://github.com/asottile/pyupgrade
+    rev: v3.15.2
+    hooks:
+      - id: pyupgrade
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.4.7
+    hooks:
+      - id: ruff-format
+      - id: ruff
+        args: [ --fix, --exit-non-zero-on-fix ]
+        types_or: [ python, pyi ]
+        require_serial: true
+#  - repo: local
+#    hooks:
+#      - id: tests
+#        name: tests
+#        entry: bash -c "pytest -v -xxx"
+#        description: Tests expected output of all scripts
+#        language: system
+#        types: [ python ]

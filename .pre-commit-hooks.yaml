@@ -1,0 +1,13 @@
+- id: validate_manifest
+  name: validate pre-commit manifest
+  description: This validator validates a pre-commit hooks manifest file
+  entry: pre-commit validate-manifest
+  language: python
+  files: ^\.pre-commit-hooks\.yaml$
+- id: poetry-check
+  name: poetry-check
+  description: run poetry check to validate config
+  entry: poetry check
+  language: python
+  pass_filenames: false
+  files: ^(.*/)?pyproject\.toml$
