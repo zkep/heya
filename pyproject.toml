@@ -1,10 +1,16 @@
-[tool.poetry]
+[project]
 name = "heya"
 version = "0.0.1"
-description = ""
-authors = ["zkep <zkeper@foxmail.com>"]
+description = "heya is html, markdown to pdf tools"
+authors = [
+    {name = "zkep", email="zkeper@foxmail.com"},
+]
 license = "MIT"
 readme = "README.md"
+
+
+[project.scripts]
+heya = "heya.__main__:main"
 
 
 [tool.poetry.dependencies]
@@ -14,10 +20,9 @@ click-didyoumean = "^0.3.1"
 click-plugins = "^1.1.1"
 selenium = "^4.27.1"
 webdriver-manager = "^4.0.2"
+pyyaml = "^6.0.2"
+mkdocs-material = "^9.5.49"
 
-
-[project.scripts]
-heya = "heya.__main__:main"
 
 [build-system]
 requires = ["poetry-core"]

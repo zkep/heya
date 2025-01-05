@@ -1,9 +1,12 @@
+from __future__ import annotations
+
 import click
 import click.exceptions
 
 from heya.bin.base import HeyaOption
 from heya.bin.html2pdf import html2pdf
-from heya import VERSION_BANNER
+from heya import __version__
+from heya.bin.md2pdf import md2pdf
 
 
 @click.group(invoke_without_command=True)
@@ -16,7 +19,7 @@ from heya import VERSION_BANNER
 @click.pass_context
 def heya(ctx, version):
     if version:
-        click.echo(VERSION_BANNER)
+        click.echo(__version__)
         ctx.exit()
     elif ctx.invoked_subcommand is None:
         click.echo(ctx.get_help())
@@ -24,6 +27,7 @@ def heya(ctx, version):
 
 
 heya.add_command(html2pdf)
+heya.add_command(md2pdf)
 
 
 def main() -> int:

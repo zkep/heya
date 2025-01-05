@@ -1,6 +1,12 @@
 from __future__ import annotations
 
+import os
+import shutil
+import subprocess
+import tempfile
+
 import click
+import yaml
 
 from heya.bin.base import HeyaCommand, HeyaOption
 from heya.pdf import converter
@@ -60,7 +66,7 @@ from heya.pdf import converter
     help="install driver",
 )
 @click.pass_context
-def html2pdf(
+def md2pdf(
     ctx,
     source,
     target,
@@ -69,5 +75,34 @@ def html2pdf(
     power,
     install_driver,
 ):
-    """Convert html to pdf file"""
-    converter.convert(source, target, timeout, compress, power, install_driver)
+    """Convert markdown to pdf file"""
+    current_path = os.path.abspath(os.path.dirname(__file__))
+    source = os.path.abspath(source)
+    with open(os.path.join(current_path, "mkdocs.yml")) as f:
+        data = yaml.safe_load(f)
+        with tempfile.TemporaryDirectory() as tmpdir:
+            mkdocs = os.path.join(tmpdir, "mkdocs.yml")
+            with open(mkdocs, "w") as w:
+                w.write(yaml.safe_dump(data))
+
+            docs_dir = os.path.join(tmpdir, "docs")
+            os.mkdir(docs_dir)
+            shutil.copy(source, os.path.join(docs_dir, "index.md"))
+
+            proc = subprocess.Popen(
+                ["mkdocs", "serve"],
+                cwd=tmpdir,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+            )
+
+            converter.convert(
+                "http://127.0.0.1:8000/",
+                target,
+                timeout,
+                compress,
+                power,
+                install_driver,
+            )
+
+            proc.kill()
