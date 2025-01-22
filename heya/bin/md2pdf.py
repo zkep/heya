@@ -2,72 +2,58 @@ from __future__ import annotations
 
 import os
 import shutil
+import socket
 import subprocess
 import tempfile
 
 import click
 import yaml
 
-from heya.bin.base import HeyaCommand, HeyaOption
 from heya.pdf import converter
 
 
-@click.command(cls=HeyaCommand)
+@click.command()
 @click.option(
     "-i",
     "--source",
-    cls=HeyaOption,
     required=True,
-    help_group="Source Options",
     help="source is html url",
 )
 @click.option(
     "-o",
     "--target",
-    cls=HeyaOption,
     required=True,
-    help_group="Target Options",
     help="target is pdf save dir",
 )
 @click.option(
     "-t",
     "--timeout",
-    cls=HeyaOption,
     type=float,
     default=3.0,
-    help_group="Timeout Options",
     help="timeout",
 )
 @click.option(
     "-c",
     "--compress",
-    cls=HeyaOption,
     type=bool,
     default=False,
-    help_group="Compress Options",
     help="compress",
 )
 @click.option(
     "-p",
     "--power",
-    cls=HeyaOption,
     type=int,
     default=0,
-    help_group="Power Options",
     help="power",
 )
 @click.option(
     "-d",
     "--install_driver",
-    cls=HeyaOption,
     type=bool,
     default=True,
-    help_group="install driver Options",
     help="install driver",
 )
-@click.pass_context
 def md2pdf(
-    ctx,
     source,
     target,
     timeout,
@@ -89,15 +75,16 @@ def md2pdf(
             os.mkdir(docs_dir)
             shutil.copy(source, os.path.join(docs_dir, "index.md"))
 
+            port = get_available_port()
             proc = subprocess.Popen(
-                ["mkdocs", "serve"],
+                ["mkdocs", "serve", "-a", f"localhost:{port}"],
                 cwd=tmpdir,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.STDOUT,
             )
 
             converter.convert(
-                "http://127.0.0.1:8000/",
+                f"http://localhost:{port}",
                 target,
                 timeout,
                 compress,
@@ -106,3 +93,9 @@ def md2pdf(
             )
 
             proc.kill()
+
+
+def get_available_port():
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        s.bind(("", 0))
+        return s.getsockname()[1]

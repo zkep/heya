@@ -1,9 +1,6 @@
 from __future__ import annotations
 
 import click
-import click.exceptions
-
-from heya.bin.base import HeyaOption
 from heya.bin.html2pdf import html2pdf
 from heya import __version__
 from heya.bin.md2pdf import md2pdf
@@ -12,9 +9,7 @@ from heya.bin.md2pdf import md2pdf
 @click.group(invoke_without_command=True)
 @click.option(
     "--version",
-    cls=HeyaOption,
     is_flag=True,
-    help_group="Global Options",
 )
 @click.pass_context
 def heya(ctx, version):

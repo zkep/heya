@@ -16,8 +16,6 @@ heya = "heya.__main__:main"
 [tool.poetry.dependencies]
 python = "^3.11"
 click = "^8.1.8"
-click-didyoumean = "^0.3.1"
-click-plugins = "^1.1.1"
 selenium = "^4.27.1"
 webdriver-manager = "^4.0.2"
 pyyaml = "^6.0.2"

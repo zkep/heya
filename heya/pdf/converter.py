@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import json
 import base64
-import time
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
@@ -69,13 +68,16 @@ def __get_pdf_from_html(
     print_options: dict,
 ):
     webdriver_options = Options()
-    webdriver_prefs = {}
-    webdriver_prefs["profile.default_content_settings"] = {"images": 2}
+
     webdriver_options.add_argument("--headless")
     webdriver_options.add_argument("--disable-gpu")
     webdriver_options.add_argument("--no-sandbox")
     webdriver_options.add_argument("--disable-dev-shm-usage")
-    webdriver_options.experimental_options["prefs"] = webdriver_prefs
+
+    prefs = {
+        "profile.default_content_settings": {"notifications": 2},
+    }
+    webdriver_options.add_experimental_option("prefs", prefs)
 
     if install_driver:
         service = Service(ChromeDriverManager().install())
@@ -88,7 +90,6 @@ def __get_pdf_from_html(
     temp_height = 0
     while True:
         driver.execute_script("window.scrollBy(0,100)")
-        time.sleep(0.2)
         driver.implicitly_wait(1)
         check_height = driver.execute_script(
             "return document.documentElement.scrollTop || window.pageYOffset || document.body.scrollTop;",
