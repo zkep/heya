@@ -1,0 +1,73 @@
+.lang-dropdown {
+    border: none !important;
+    background: transparent !important;
+    min-width: 60px !important;
+}
+
+.lang-dropdown .container {
+    background: transparent !important;
+}
+
+.lang-dropdown .wrap {
+    background: transparent !important;
+}
+
+.lang-dropdown .wrap-inner {
+    border: none !important;
+    background: transparent !important;
+    padding: 2px 6px !important;
+}
+
+.lang-dropdown .secondary-wrap {
+    background: transparent !important;
+}
+
+.lang-dropdown .icon-wrap {
+    width: 16px !important;
+    height: 16px !important;
+}
+
+.lang-dropdown .dropdown-arrow {
+    width: 12px !important;
+    height: 12px !important;
+}
+
+.lang-dropdown input {
+    font-size: 14px !important;
+    background: transparent !important;
+    border: none !important;
+}
+
+.html-container {
+    min-width: 20px !important;
+    flex-shrink: 0 !important;
+    background: transparent !important;
+}
+
+.github-link {
+    min-width: 16px !important;
+    flex-shrink: 0 !important;
+}
+
+.github-link .html-container {
+    min-width: 16px !important;
+    flex-shrink: 0 !important;
+    background: transparent !important;
+}
+
+.row {
+    align-items: center !important;
+    gap: 8px !important;
+}
+
+.tab-nav button {
+    font-weight: bold !important;
+}
+
+.md {
+    font-size: 14px !important;
+}
+
+div {
+    font-weight: bold !important;
+}

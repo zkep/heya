@@ -1,0 +1,8 @@
+version: '3.8'
+services:
+  heya:
+    build: .
+    ports:
+      - "7860:7860"
+    environment:
+      - PYTHONUNBUFFERED=1
