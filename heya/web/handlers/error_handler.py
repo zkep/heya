@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import gradio as gr
 
-from heya.shared import ErrorInfo, get_error_info
+from heya.core.logging.logging import ErrorInfo, get_error_info
 from heya.web.i18n import get_texts
 
 __all__ = ["ErrorHandler", "GradioUpdate"]

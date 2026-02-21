@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from heya.domain import (
+from heya.core.exceptions import (
     CompressError,
     ConfigError,
     ConvertError,

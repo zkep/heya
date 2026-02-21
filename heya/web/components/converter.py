@@ -5,7 +5,7 @@ from typing import Any
 import gradio as gr
 
 from heya.web.core.component import ComponentContext
-from heya.web.handler import (
+from heya.web.services.handler import (
     convert_html_to_pdf_with_error_handling,
     convert_md_to_pdf_stream,
 )
@@ -189,7 +189,7 @@ class MarkdownConverterComponent:
         cancel_btn: gr.Button,
         error_buttons_row: gr.Row,
     ) -> None:
-        from heya.web.handler import merge_md_pdfs
+        from heya.web.services.handler import merge_md_pdfs
 
         assert self._convert_btn is not None
         assert self._input is not None

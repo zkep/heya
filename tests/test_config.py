@@ -2,15 +2,14 @@ from __future__ import annotations
 
 import pytest
 
-from heya.shared.config import (
+from heya.core.config.models import (
     AppConfig,
     BrowserConfig,
     CompressionConfig,
     MarkdownConfig,
     PrintConfig,
-    get_config,
-    reset_config,
 )
+from heya.core.config.loader import load_config
 
 
 class TestBrowserConfig:
@@ -92,13 +91,6 @@ class TestAppConfig:
         assert config.browser.timeout == 5.0
 
 
-def test_get_config():
-    config = get_config()
+def test_load_config():
+    config = load_config()
     assert isinstance(config, AppConfig)
-
-
-def test_reset_config():
-    config1 = get_config()
-    reset_config()
-    config2 = get_config()
-    assert config1 is not config2

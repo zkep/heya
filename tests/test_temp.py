@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import os
 
-from heya.shared.temp import OutputFileManager, TempFileManager, create_output_path
+from heya.core.temp.temp import OutputFileManager, TempFileManager, create_output_path
 
 
 class TestTempFileManager:

@@ -100,7 +100,7 @@ class WechatConverterComponent:
         cancel_btn: gr.Button,
         error_buttons_row: gr.Row,
     ) -> None:
-        from heya.web.handler import convert_wechat_to_pdf_stream, merge_wechat_pdfs
+        from heya.web.services.handler import convert_wechat_to_pdf_stream, merge_wechat_pdfs
 
         assert self._convert_btn is not None
         assert self._input is not None

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from heya.infrastructure.template import DEFAULT_CSS, HTML_TEMPLATE, render_html
+from heya.core.template.html_template import DEFAULT_CSS, HTML_TEMPLATE, render_html
 
 
 class TestRenderHtml:

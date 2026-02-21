@@ -4,10 +4,10 @@ from typing import Generator
 
 import gradio as gr
 
-from heya.web.constants import MAX_FILES_PER_BATCH
+from heya.web.config.constants import MAX_FILES_PER_BATCH
 from heya.web.handlers.base_handler import BaseHandler, StreamProgressResponse
 from heya.web.i18n import get_texts
-from heya.web.service import ConversionError
+from heya.web.services.service import ConversionError
 
 __all__ = ["MarkdownHandler"]
 
@@ -53,7 +53,7 @@ class MarkdownHandler(BaseHandler):
 
         return md_files
 
-    def convert_stream(
+    async def convert_stream(
         self,
         md_files: list[str] | str,
         timeout: float,
@@ -64,9 +64,10 @@ class MarkdownHandler(BaseHandler):
 
         try:
             service = self._get_service(lang)
-            yield from service.convert_markdown_stream(
+            async for result in service.convert_markdown_stream(
                 md_files, timeout, quality, lang, self._get_stream_progress_update
-            )
+            ):
+                yield result
         except ConversionError as e:
             completed_files, button_update, progress_update = self._get_stream_error_response([], lang)
             yield completed_files, button_update, progress_update

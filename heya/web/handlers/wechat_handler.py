@@ -4,19 +4,50 @@ from typing import Generator
 
 import gradio as gr
 
-from heya.web.constants import (
+from heya.web.config.constants import (
     FILENAME_PREFIX_WECHAT,
     MERGE_TITLE_WECHAT,
 )
 from heya.web.handlers.base_handler import BaseHandler, StreamProgressResponse
 from heya.web.i18n import get_texts
-from heya.web.merge_utils import merge_pdfs
-from heya.web.service import ConversionError
+from heya.web.utils.merge_utils import merge_pdfs
+from heya.web.services.service import ConversionError
 
 __all__ = ["WechatHandler"]
 
 
 class WechatHandler(BaseHandler):
+    def convert_with_error_handling(
+        self,
+        url: str,
+        timeout: float,
+        quality: int,
+        lang: str,
+    ):
+        try:
+            service = self._get_service(lang)
+            result = service.convert_wechat(url, timeout, quality)
+            return self._get_wechat_success_response(result, lang)
+        except Exception as e:
+            return self._handle_conversion_error(e, lang)
+
+    def _get_wechat_success_response(
+        self,
+        result: list[str],
+        lang: str,
+    ) -> tuple:
+        show_merge_button = len(result) > 1
+        return (
+            result,
+            self._error_handler.reset_convert_button(lang),
+            gr.update(visible=False),
+            gr.update(visible=False),
+            gr.update(visible=False),
+            gr.update(visible=False),
+            gr.update(visible=False),
+            gr.update(visible=show_merge_button),
+        )
+
     def convert(
         self,
         url: str,
@@ -30,7 +61,7 @@ class WechatHandler(BaseHandler):
         except ConversionError as e:
             raise gr.Error(str(e)) from e
 
-    def convert_stream(
+    async def convert_stream(
         self,
         url: str,
         timeout: float,
@@ -39,9 +70,10 @@ class WechatHandler(BaseHandler):
     ) -> Generator[StreamProgressResponse, None, None]:
         try:
             service = self._get_service(lang)
-            yield from service.convert_wechat_stream(
+            async for result in service.convert_wechat_stream(
                 url, timeout, quality, lang, self._get_stream_progress_update
-            )
+            ):
+                yield result
         except ConversionError as e:
             completed_files, button_update, progress_update = self._get_stream_error_response([], lang)
             yield completed_files, button_update, progress_update

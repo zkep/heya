@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from heya.domain import (
+from heya.core.models import (
     COMPRESSION_QUALITY_MAX,
     COMPRESSION_QUALITY_MIN,
     ConvertResult,

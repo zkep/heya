@@ -57,7 +57,7 @@ class PdfToWordComponent:
         cancel_btn: gr.Button,
         error_buttons_row: gr.Row,
     ) -> None:
-        from heya.web.handler import convert_pdf_to_word_with_error_handling
+        from heya.web.services.handler import convert_pdf_to_word_with_error_handling
 
         assert self._convert_btn is not None
         assert self._input is not None

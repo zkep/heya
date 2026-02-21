@@ -1,24 +1,65 @@
 from __future__ import annotations
 
 import time
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock, patch, AsyncMock
 
 import pytest
 
-from heya.application import HtmlToPdfConverter, MarkdownToPdfConverter
-from heya.domain import ConvertError, ConvertResult, PdfContent
+from heya.core.converters.converters import HtmlToPdfConverter, MarkdownToPdfConverter
+from heya.core.exceptions import ConvertError
+from heya.core.models import ConvertResult, PdfContent
 
 
 class MockBrowser:
     def __init__(self, pdf_data: bytes = b"test-pdf") -> None:
         self._pdf_data = pdf_data
 
-    def render_to_pdf(
+    def acquire(self):
+        return MockBrowserContext(self)
+
+
+class MockBrowserContext:
+    def __init__(self, browser: MockBrowser) -> None:
+        self._browser = browser
+
+    async def __aenter__(self) -> "MockBrowserContext":
+        return self
+
+    async def __aexit__(self, exc_type, exc_val, exc_tb) -> None:
+        pass
+
+    async def render(
         self,
         url: str,
         print_options: dict[str, object] | None = None,
-    ) -> PdfContent:
-        return PdfContent(self._pdf_data)
+    ) -> bytes:
+        return self._browser._pdf_data
+
+
+class MockBrowserWithError:
+    def __init__(self, error: Exception) -> None:
+        self._error = error
+
+    def acquire(self):
+        return MockBrowserContextWithError(self)
+
+
+class MockBrowserContextWithError:
+    def __init__(self, browser: MockBrowserWithError) -> None:
+        self._browser = browser
+
+    async def __aenter__(self) -> "MockBrowserContextWithError":
+        return self
+
+    async def __aexit__(self, exc_type, exc_val, exc_tb) -> None:
+        pass
+
+    async def render(
+        self,
+        url: str,
+        print_options: dict[str, object] | None = None,
+    ) -> bytes:
+        raise self._browser._error
 
 
 class MockPdfWriter:
@@ -43,12 +84,13 @@ class MockMarkdownService:
 
 
 class TestHtmlToPdfConverter:
-    def test_convert_success(self) -> None:
+    @pytest.mark.asyncio
+    async def test_convert_success(self) -> None:
         browser = MockBrowser(b"test-pdf-content")
         pdf_writer = MockPdfWriter()
         converter = HtmlToPdfConverter(browser, pdf_writer)
 
-        result = converter.convert(
+        result = await converter.convert(
             source="https://example.com",
             target="/tmp/output.pdf",
         )
@@ -59,13 +101,14 @@ class TestHtmlToPdfConverter:
         assert pdf_writer.written_content is not None
         assert pdf_writer.written_content.data == b"test-pdf-content"
 
-    def test_convert_with_compression(self) -> None:
+    @pytest.mark.asyncio
+    async def test_convert_with_compression(self) -> None:
         browser = MockBrowser(b"test-pdf-content")
         pdf_writer = MockPdfWriter()
         pdf_compressor = MockPdfCompressor()
         converter = HtmlToPdfConverter(browser, pdf_writer, pdf_compressor)
 
-        result = converter.convert(
+        result = await converter.convert(
             source="https://example.com",
             target="/tmp/output.pdf",
             compress=True,
@@ -76,28 +119,29 @@ class TestHtmlToPdfConverter:
         assert pdf_writer.written_content is not None
         assert b"compressed-" in pdf_writer.written_content.data
 
-    def test_convert_failure(self) -> None:
-        browser = MagicMock()
-        browser.render_to_pdf.side_effect = Exception("Browser error")
+    @pytest.mark.asyncio
+    async def test_convert_failure(self) -> None:
+        browser = MockBrowserWithError(Exception("Browser error"))
         pdf_writer = MockPdfWriter()
         converter = HtmlToPdfConverter(browser, pdf_writer)
 
         with pytest.raises(ConvertError, match="Browser error"):
-            converter.convert(
+            await converter.convert(
                 source="https://example.com",
                 target="/tmp/output.pdf",
             )
 
 
 class TestMarkdownToPdfConverter:
-    def test_convert_success(self) -> None:
+    @pytest.mark.asyncio
+    async def test_convert_success(self) -> None:
         browser = MockBrowser(b"test-pdf-content")
         pdf_writer = MockPdfWriter()
         html_converter = HtmlToPdfConverter(browser, pdf_writer)
         markdown_service = MockMarkdownService()
         converter = MarkdownToPdfConverter(markdown_service, html_converter)
 
-        result = converter.convert(
+        result = await converter.convert(
             source="test.md",
             target="/tmp/output.pdf",
         )
@@ -105,7 +149,8 @@ class TestMarkdownToPdfConverter:
         assert result.success is True
         assert result.output_path == "/tmp/output.pdf"
 
-    def test_convert_with_compression(self) -> None:
+    @pytest.mark.asyncio
+    async def test_convert_with_compression(self) -> None:
         browser = MockBrowser(b"test-pdf-content")
         pdf_writer = MockPdfWriter()
         pdf_compressor = MockPdfCompressor()
@@ -113,7 +158,7 @@ class TestMarkdownToPdfConverter:
         markdown_service = MockMarkdownService()
         converter = MarkdownToPdfConverter(markdown_service, html_converter)
 
-        result = converter.convert(
+        result = await converter.convert(
             source="test.md",
             target="/tmp/output.pdf",
             compress=True,
@@ -122,16 +167,16 @@ class TestMarkdownToPdfConverter:
 
         assert result.success is True
 
-    def test_cleanup_called_on_error(self) -> None:
-        browser = MagicMock()
-        browser.render_to_pdf.side_effect = Exception("Browser error")
+    @pytest.mark.asyncio
+    async def test_cleanup_called_on_error(self) -> None:
+        browser = MockBrowserWithError(Exception("Browser error"))
         pdf_writer = MockPdfWriter()
         html_converter = HtmlToPdfConverter(browser, pdf_writer)
         markdown_service = MockMarkdownService()
         converter = MarkdownToPdfConverter(markdown_service, html_converter)
 
         with pytest.raises(ConvertError):
-            converter.convert(
+            await converter.convert(
                 source="test.md",
                 target="/tmp/output.pdf",
             )

@@ -4,7 +4,7 @@ import gradio as gr
 
 from heya.web.core.component import ComponentContext
 from heya.web.i18n import get_texts
-from heya.web.constants import (
+from heya.web.config.constants import (
     TIMEOUT_MIN,
     TIMEOUT_MAX,
     TIMEOUT_DEFAULT,

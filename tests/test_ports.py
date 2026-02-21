@@ -1,18 +1,16 @@
 from __future__ import annotations
 
-from heya.application import (
+from heya.core.interfaces import (
     BrowserPort,
     MarkdownPort,
     PdfCompressorPort,
     PdfWriterPort,
 )
-from heya.domain import PdfContent
-from heya.infrastructure import (
-    MarkdownProcessor,
-    PdfCompressor,
-    PdfWriter,
-    PlaywrightBrowser,
-)
+from heya.core.models import PdfContent
+from heya.core.markdown.markdown_processor import MarkdownProcessor
+from heya.core.pdf.pdf_compressor import PdfCompressor
+from heya.core.pdf.pypdf_writer import PdfWriter
+from heya.core.browser.playwright_browser import PlaywrightBrowser
 
 
 class TestBrowserPort:

@@ -5,12 +5,15 @@ from typing import Any
 import gradio as gr
 
 from heya.web.handlers.error_handler import ErrorHandler, GradioUpdate
-from heya.web.service import ConversionError, WebConvertService
+from heya.web.services.service import ConversionError, WebConvertService
 
 __all__ = ["BaseHandler", "HandlerResponse", "StreamProgressResponse"]
 
 HandlerResponse = tuple[
     str | list[str], GradioUpdate, GradioUpdate, GradioUpdate, GradioUpdate, GradioUpdate, GradioUpdate
+]
+WechatHandlerResponse = tuple[
+    str | list[str], GradioUpdate, GradioUpdate, GradioUpdate, GradioUpdate, GradioUpdate, GradioUpdate, GradioUpdate
 ]
 StreamProgressResponse = tuple[list[str] | None, dict[str, Any], dict[str, Any]]
 

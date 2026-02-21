@@ -14,13 +14,13 @@ from heya.web.components.tips import TipsComponent
 from heya.web.components.wechat import WechatConverterComponent
 from heya.web.core.component import ComponentContext
 from heya.web.core.registry import ComponentRegistry
-from heya.web.handler import hide_error_dialog, open_issue_url
+from heya.web.services.handler import hide_error_dialog, open_issue_url
 from heya.web.i18n import LANGUAGE_OPTIONS, get_texts, UITexts
 
 if TYPE_CHECKING:
     pass
 
-_CSS_FILE_PATH = os.path.join(os.path.dirname(__file__), "styles.css")
+_CSS_FILE_PATH = os.path.join(os.path.dirname(__file__), "assets", "styles.css")
 
 
 def _load_css() -> str:
